@@ -114,6 +114,8 @@ const loginController = async (req, res , next) =>{
     }
 
 }
+const testController = async(req, res , next)=>{
+    res.send("protected")
+}
 
-
-module.exports = {registerController, loginController}
+module.exports = {registerController, loginController, testController}
