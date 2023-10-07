@@ -10,7 +10,7 @@ const registerController = async(req, res , next) => {
 
         // validation
         if(!name || !email || !password || !phone || !address){
-            return res.send({error : "Credintial Required"})
+            return res.send({message : "Credintial Required"})
         }
 
         // check the existing user
@@ -18,7 +18,7 @@ const registerController = async(req, res , next) => {
 
         if(existingUser){
             return res.send({
-                success : true,
+                success : false,
                 message : "User already register"
             })
         }

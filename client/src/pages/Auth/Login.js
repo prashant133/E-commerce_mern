@@ -1,98 +1,90 @@
-import { React, useState } from "react";
-import Layout from "../../components/Layout/Layout";
+import React, { useState } from "react";
+import Layout from "./../../components/Layout/Layout";
+import Axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-import Axios  from "axios";
-import { useNavigate } from "react-router-dom";
 import "../../styles/AuthStyles.css";
 import { useAuth } from "../../context/auth";
-
-
 const Login = () => {
-
-    // using state for login
-   // we have get and set function in useState
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-
-    // custom hook
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [auth, setAuth] = useAuth();
 
-    const navigate = useNavigate(); //we create a variable becuase it is the hook
-
+    const navigate = useNavigate();
+    const location = useLocation();
 
     // form function
-    const handleSubmit = async (e)=> {
-        e.preventDefault()
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            const res = await Axios.post(
-                `/api/v1/auth/login`,
-                {email , password}
-            );
-            // we are checking it from the server side res.data.success
-            if(res && res.data.success){
-                toast.success(res.data.message, {duration : 5000});
-                // getting the data
+            const res = await Axios.post("/api/v1/auth/login", {
+                email,
+                password,
+            });
+            if (res && res.data.success) {
+                toast.success(res.data && res.data.message);
                 setAuth({
                     ...auth,
-                    user : res.data.user,
-                    token :  res.data.token
-                })
-                // storing the data in local storage
-                localStorage.setItem('auth',JSON.stringify(res.data))
-                navigate("/");
+                    user: res.data.user,
+                    token: res.data.token,
+                });
+                localStorage.setItem("auth", JSON.stringify(res.data));
+                navigate(location.state || "/");
             } else {
-                toast.error(res.data.message , {duration : 5000})
+                toast.error(res.data.message);
             }
-            
         } catch (error) {
-            console.log(error)
-            toast.error("something went wrong", {duration : 5000})
+            console.log(error);
+            toast.error("Something went wrong");
         }
-
-    }
-
+    };
     return (
-        <Layout title={"Login"}>
-            <div className="form-container">
-                <h1>Login page</h1>
+        <Layout title="Register - Ecommer App">
+            <div className="form-container ">
                 <form onSubmit={handleSubmit}>
-                   
+                    <h4 className="title">LOGIN FORM</h4>
 
                     <div className="mb-3">
-
-                        <input 
-                         type="email"
-                         value={email}
-                         onChange={(e)=>setEmail(e.target.value)}
-                         className="form-control" 
-                         id="exampleInputEmail"
-                         placeholder="Enter your email " 
-                         required
-                          />
-
-                    </div>
-                    <div className="mb-3">
-
-                        <input 
-                        type="password" 
-                        value={password} 
-                        onChange={(e)=>setPassword(e.target.value)}
-                        className="form-control" 
-                        id="exampleInputPassword" 
-                        placeholder="Enter your password" 
-                        required
+                        <input
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="form-control"
+                            id="exampleInputEmail1"
+                            placeholder="Enter Your Email "
+                            required
                         />
                     </div>
-                   
+                    <div className="mb-3">
+                        <input
+                            type="password"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            className="form-control"
+                            id="exampleInputPassword1"
+                            placeholder="Enter Your Password"
+                            required
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => {
+                                navigate("/forgot-password");
+                            }}
+                        >
+                            Forgot Password
+                        </button>
+                    </div>
 
-
-                    <button type="submit" className="btn btn-primary">Login</button>
+                    <button type="submit" className="btn btn-primary">
+                        LOGIN
+                    </button>
                 </form>
-
-
             </div>
         </Layout>
-    )
-}
+    );
+};
 
 export default Login;

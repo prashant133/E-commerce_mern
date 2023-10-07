@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const dotenv = require('dotenv').config()
 const morgan = require('morgan')
 const authRoutes = require('./routes/authRoutes')
+const cors = require('cors')
 
 
 
@@ -18,6 +19,7 @@ port = process.env.PORT
 // middleware
 app.use(express.json())
 app.use(morgan('dev'))
+app.use(cors())
 
 // initial routes
 app.get('/',(req , res , next)=> {
