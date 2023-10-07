@@ -28,15 +28,15 @@ const Register = () => {
             );
             // we are checking it from the server side res.data.success
             if(res && res.data.success){
-                toast.success(res.data.message)
+                toast.success(res.data.message, {duration : 5000})
                 navigate("/login");
             } else {
-                toast.error(res.data.message)
+                toast.error(res.data.message , {duration : 5000})
             }
             
         } catch (error) {
             console.log(error)
-            toast.error("something went wrong")
+            toast.error("something went wrong" , {duration : 5000})
         }
 
     }

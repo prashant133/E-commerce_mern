@@ -1,8 +1,24 @@
 import { React } from "react";
-import { NavLink, Link} from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
+import { useAuth } from "../../context/auth";
+import toast, { Toast } from "react-hot-toast";
 
 const Header = () => {
+   const [auth, setAuth] = useAuth();
+
+   // function to logout
+   const handleLogout = ()=>{
+      // chaning the state of that we logout
+      setAuth({
+         ...auth,
+         user : null,
+         token : ""
+      })
+      localStorage.removeItem('auth');
+      toast.success("logout successfully", {duration : 5000})
+
+   }
    return (
       <>
          <nav className="navbar navbar-expand-lg bg-body-tertiary">
@@ -11,7 +27,7 @@ const Header = () => {
                   <span className="navbar-toggler-icon" />
                </button>
                <div className="collapse navbar-collapse" id="navbarTogglerDemo01">
-                  <Link to="/" className="navbar-brand" ><FaShoppingCart/> E-commerce </Link>
+                  <Link to="/" className="navbar-brand" ><FaShoppingCart /> E-commerce </Link>
                   <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                      <li className="nav-item">
                         <NavLink to="/" className="nav-link " >Home</NavLink>
@@ -19,12 +35,17 @@ const Header = () => {
                      <li className="nav-item">
                         <NavLink to="/category" className="nav-link " >Category</NavLink>
                      </li>
-                     <li className="nav-item">
-                        <NavLink to="/register" className="nav-link">Register</NavLink>
-                     </li>
-                     <li className="nav-item">
-                        <NavLink to="/login" className="nav-link">Login</NavLink>
-                     </li>
+                     {
+                        !auth.user ? (<>
+                           <li className="nav-item">
+                              <NavLink to="/register" className="nav-link">Register</NavLink>
+                           </li>
+                           <li className="nav-item">
+                              <NavLink to="/login" className="nav-link">Login</NavLink>
+                           </li></>) : (<>
+                              <NavLink onClick={handleLogout} to="/login" className="nav-link">Logout</NavLink>
+                           </>)
+                     }
                      <li className="nav-item">
                         <NavLink to="/cart" className="nav-link">Cart (0)</NavLink>
                      </li>
