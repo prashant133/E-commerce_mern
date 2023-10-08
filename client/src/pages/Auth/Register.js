@@ -14,6 +14,7 @@ const Register = () => {
     const [password, setPassword] = useState("")
     const [phone, setPhone] = useState("")
     const [address, setAddress] = useState("")
+    const [answer, setAnswer] = useState("")
 
     const navigate = useNavigate(); //we create a variable becuase it is the hook
 
@@ -24,7 +25,7 @@ const Register = () => {
         try {
             const res = await Axios.post(
                 `/api/v1/auth/register`,
-                {name , email , password , phone , address}
+                {name , email , password , phone , address, answer}
             );
             // we are checking it from the server side res.data.success
             if(res && res.data.success){
@@ -106,6 +107,19 @@ const Register = () => {
                          className="form-control"
                           id="exampleInputAddress" 
                           placeholder="Enter your Address"
+                          required
+                          />
+
+                    </div>
+
+                    <div className="mb-3">
+
+                        <input type="text"
+                         value={answer} 
+                         onChange={(e)=>setAnswer(e.target.value)}
+                         className="form-control"
+                          id="exampleInputAnswer" 
+                          placeholder="what is fav sports "
                           required
                           />
 

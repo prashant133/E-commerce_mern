@@ -6,10 +6,10 @@ const JWT = require('jsonwebtoken')
 // registration of the user
 const registerController = async(req, res , next) => {
     try {
-        const {name , email , password , phone , address} = req.body;
+        const {name , email , password , phone , address, answer} = req.body;
 
         // validation
-        if(!name || !email || !password || !phone || !address){
+        if(!name || !email || !password || !phone || !address || !answer){
             return res.send({message : "Credintial Required"})
         }
 
@@ -32,7 +32,8 @@ const registerController = async(req, res , next) => {
             email,
             phone,
             address,
-            password : hashedPassword
+            password : hashedPassword,
+            answer,
         }).save()
 
         return res.status(201).send({
@@ -97,6 +98,7 @@ const loginController = async (req, res , next) =>{
                 email : user.email,
                 phone : user.phone,
                 address : user.address,
+                
 
 
             },
@@ -114,8 +116,59 @@ const loginController = async (req, res , next) =>{
     }
 
 }
+
+// forgot password controller
+const forgotPasswordController = async(req , res , next)=>{
+    try {
+        const {email , answer , newPassword} = req.body;
+        if(!email){
+            res.status(400).send({
+                message : "Email is required"
+            })
+        }
+        if(!answer){
+            res.status(400).send({
+                message : "answer is required"
+            })
+        }
+        if(!newPassword){
+            res.status(400).send({
+                message : "New Password is required"
+            })
+        }
+        // check the email and password
+        const user = await User.findOne({email,answer})
+        // validation
+        if(!user){
+            return res.status(400).send({
+                success : false,
+                message : "Wrong Email or Answer",
+
+            })
+        }
+        const hashed = await hashPassword.hashedPassword(newPassword)
+        await User.findByIdAndUpdate(user._id,{password : hashed})
+        res.status(200).send({
+            success : true, 
+            message : "Password changed successfully"
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success : false,
+            message : "Something went wrong",
+            error
+        })
+    }
+
+
+
+}
+
+
+
 const testController = async(req, res , next)=>{
     res.send("protected")
 }
 
-module.exports = {registerController, loginController, testController}
+module.exports = {registerController, loginController, testController, forgotPasswordController}

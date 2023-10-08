@@ -8,15 +8,15 @@ const Header = () => {
    const [auth, setAuth] = useAuth();
 
    // function to logout
-   const handleLogout = ()=>{
+   const handleLogout = () => {
       // chaning the state of that we logout
       setAuth({
          ...auth,
-         user : null,
-         token : ""
+         user: null,
+         token: ""
       })
       localStorage.removeItem('auth');
-      toast.success("logout successfully", {duration : 5000})
+      toast.success("logout successfully", { duration: 5000 })
 
    }
    return (
@@ -43,7 +43,18 @@ const Header = () => {
                            <li className="nav-item">
                               <NavLink to="/login" className="nav-link">Login</NavLink>
                            </li></>) : (<>
-                              <NavLink onClick={handleLogout} to="/login" className="nav-link">Logout</NavLink>
+                              <li className="nav-item dropdown">
+                                 <NavLink className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {auth?.user?.name}
+                                 </NavLink>
+                                 <ul className="dropdown-menu">
+                                    <li><NavLink to="/dashboard" className="dropdown-item">Dashboard</NavLink></li>
+                                    <li><NavLink onClick={handleLogout} to='/login'  className="dropdown-item"> Logout</NavLink></li>
+                                    
+                                 </ul>
+                              </li>
+                              
+
                            </>)
                      }
                      <li className="nav-item">
