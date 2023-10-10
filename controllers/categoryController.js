@@ -98,7 +98,7 @@ const singleCategoryController = async(req, res)=> {
         const category = await Category.findOne({slug : req.params.slug})
         res.status(200).send({
             success : true,
-            message : "single categeory",
+            message : "getting single categeory",
             category
         })
         
@@ -112,5 +112,29 @@ const singleCategoryController = async(req, res)=> {
     }
 }
 
+// delete category Controller
 
-module.exports = {createCategoryController,updateCategoryController, categoryController,singleCategoryController}
+const deleteCategoryController = async(req, res)=>{
+    try {
+
+        const{name} = req.body;
+        const{id} = req.params;
+
+        const category = await Category.findByIdAndDelete(id);
+        res.status(200).send({
+            success : true,
+            message : "Category deleted successfully"
+        })
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success : false,
+            message : "Error in deleting the category",
+            error
+            
+        })
+    }
+}
+
+module.exports = {createCategoryController,updateCategoryController, categoryController,singleCategoryController,deleteCategoryController}
