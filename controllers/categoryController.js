@@ -42,4 +42,31 @@ const createCategoryController = async(req, res , next)=> {
 }
 
 
-module.exports = {createCategoryController}
+const updateCategoryController = async(req ,res)=>{
+    try {
+        const {name}= req.body;
+        const {id}= req.params;
+
+        // check for the category using the id
+
+        const category = await Category.findByIdAndUpdate(id,{name,slug:slugify(name)},{new : true});
+
+        res.status(200).send({
+            success : true,
+            message : "category updated successfully",
+            category,
+        })
+
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success : false, 
+            error,
+            message : " Error in update catefory"
+        })
+    }
+}
+
+
+module.exports = {createCategoryController,updateCategoryController}
