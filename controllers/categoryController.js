@@ -1,6 +1,8 @@
 const { default: slugify } = require("slugify");
 const Category = require("../models/categoryModel")
 
+
+// create category
 const createCategoryController = async(req, res , next)=> {
     try {
         const {name} = req.body;
@@ -41,7 +43,7 @@ const createCategoryController = async(req, res , next)=> {
 
 }
 
-
+// update Category
 const updateCategoryController = async(req ,res)=>{
     try {
         const {name}= req.body;
@@ -68,5 +70,26 @@ const updateCategoryController = async(req ,res)=>{
     }
 }
 
+// get all category
+const categoryController = async(req ,res)=> {
+    try {
+        const category = await Category.find({});
+        res.status(200).send({
+            success : true,
+            message : "All categories",
+            category,
+        })
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success : false,
+            message : "Error in get all Category",
+            error
+        })
+    }
+}
 
-module.exports = {createCategoryController,updateCategoryController}
+
+
+module.exports = {createCategoryController,updateCategoryController, categoryController}
