@@ -90,6 +90,27 @@ const categoryController = async(req ,res)=> {
     }
 }
 
+// get single category
+const singleCategoryController = async(req, res)=> {
+    try {
+        
+        
+        const category = await Category.findOne({slug : req.params.slug})
+        res.status(200).send({
+            success : true,
+            message : "single categeory",
+            category
+        })
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success : false,
+            message : "Error in getting single category",
+            error
+        })
+    }
+}
 
 
-module.exports = {createCategoryController,updateCategoryController, categoryController}
+module.exports = {createCategoryController,updateCategoryController, categoryController,singleCategoryController}

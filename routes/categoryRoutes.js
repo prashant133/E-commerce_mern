@@ -1,6 +1,6 @@
 const express = require("express")
 const { requireSignIn, isAdmin } = require("../middleware/authMiddleware")
-const { createCategoryController, updateCategoryController, categoryController } = require("../controllers/categoryController")
+const { createCategoryController, updateCategoryController, categoryController, singleCategoryController } = require("../controllers/categoryController")
 
 
 const router = express.Router()
@@ -14,6 +14,9 @@ router.put('/update-category/:id', requireSignIn , isAdmin, updateCategoryContro
 
 // get all category
 router.get('/get-category', categoryController)
+
+// get single category
+router.get('/single-category/:slug',singleCategoryController)
 
 
 // delete routes
