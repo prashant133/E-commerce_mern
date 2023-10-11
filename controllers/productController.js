@@ -47,5 +47,30 @@ const createProductController = async(req, res)=> {
 
 }
 
+// get all product
+const getProductController = async(req, res)=>{
+    try {
 
-module.exports = {createProductController}
+        const products = await Product.find({}).select("-photo").limit(12).sort({createdAt : -1})
+        res.status(200).send({
+            success : true,
+            totalProduct : products.length,
+            message : "All Products",
+            products,
+            
+        })
+
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success : false,
+            message : "Error in getting product",
+            error : error.message
+        })
+    }
+
+}
+
+
+module.exports = {createProductController,getProductController }

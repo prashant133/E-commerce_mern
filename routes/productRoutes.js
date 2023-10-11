@@ -1,5 +1,5 @@
 const express = require('express')
-const { createProductController } = require('../controllers/productController')
+const { createProductController, getProductController } = require('../controllers/productController')
 const { requireSignIn, isAdmin } = require('../middleware/authMiddleware')
 const formidable = require('express-formidable')
 
@@ -9,6 +9,7 @@ const router = express.Router()
 // create product
 router.post('/create-product',requireSignIn,isAdmin,formidable(),createProductController)
 
-
+// get-product
+router.get('/get-product',getProductController)
 
 module.exports = router
