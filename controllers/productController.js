@@ -51,7 +51,7 @@ const createProductController = async(req, res)=> {
 const getProductController = async(req, res)=>{
     try {
 
-        const products = await Product.find({}).select("-photo").limit(12).sort({createdAt : -1})
+        const products = await Product.find({}).populate('category').select("-photo").limit(12).sort({createdAt : -1})
         res.status(200).send({
             success : true,
             totalProduct : products.length,
@@ -72,5 +72,27 @@ const getProductController = async(req, res)=>{
 
 }
 
+// get single product
+const getSingleProductController = async(req ,res)=> {
 
-module.exports = {createProductController,getProductController }
+    try {
+        const product = await Product.findOne({slug : req.params.slug}).select("-photo").populate('category')
+        res.status(200).send({
+            success : true,
+            message : "Single Product fetched",
+            product
+        })
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success : false,
+            message :"Error in getting single product",
+            error : error.message
+        })
+    }
+
+}
+
+
+module.exports = {createProductController,getProductController,getSingleProductController}
