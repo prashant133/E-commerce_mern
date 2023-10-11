@@ -94,5 +94,31 @@ const getSingleProductController = async(req ,res)=> {
 
 }
 
+// getting product photo
+const productPhotoController = async(req, res)=> {
 
-module.exports = {createProductController,getProductController,getSingleProductController}
+    try {
+
+        const product = await Product.findById(req.params.pid).select("photo")
+
+        if (product && product.photo && product.photo.data) {
+            res.set("Content-type", product.photo.contentType);
+            return res.status(200).send(product.photo.data);
+        } else {
+            
+            res.status(404).send("Product photo not found");
+        }
+        
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success : false,
+            message : "Error in getting product photo",
+            error : error.message
+        })
+    }
+
+}
+
+
+module.exports = {createProductController,getProductController,getSingleProductController,productPhotoController}
