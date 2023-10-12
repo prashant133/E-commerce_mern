@@ -33,6 +33,7 @@ function App() {
         </Route>
         <Route path="/dashboard" element={<AdminRoute/>}>
           <Route path="admin" element={<AdminDashboard/>}/>
+          {/* <Route path="admin" element={<AdminDashboard/>}/> */}
           <Route path="admin/create-category" element={<CreatCategory/>}/>
           <Route path="admin/create-product" element={<CreateProduct/>}/>
           <Route path="admin/users" element={<Users/>}/>
