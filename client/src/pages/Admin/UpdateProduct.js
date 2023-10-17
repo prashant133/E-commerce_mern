@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "./../../components/Layout/Layout";
 import AdminMenu from "./../../components/Layout/AdminMenu";
 import toast from "react-hot-toast";
-import axios from "axios";
+import Axios from "axios";
 import { Select } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 const { Option } = Select;
@@ -18,12 +18,13 @@ const UpdateProduct = () => {
   const [quantity, setQuantity] = useState("");
   const [shipping, setShipping] = useState("");
   const [photo, setPhoto] = useState("");
+//   this is for shipping because we have id in shipping which is 1 or 0 which is yes or no
   const [id, setId] = useState("");
 
   //get single product
   const getSingleProduct = async () => {
     try {
-      const { data } = await axios.get(
+      const { data } = await Axios.get(
         `/api/v1/product/get-product/${params.slug}`
       );
       setName(data.product.name);
@@ -45,7 +46,7 @@ const UpdateProduct = () => {
   //get all category
   const getAllCategory = async () => {
     try {
-      const { data } = await axios.get("/api/v1/category/get-category");
+      const { data } = await Axios.get("/api/v1/category/get-category");
       if (data?.success) {
         setCategories(data?.category);
       }
@@ -70,7 +71,7 @@ const UpdateProduct = () => {
       productData.append("quantity", quantity);
       photo && productData.append("photo", photo);
       productData.append("category", category);
-      const { data } = axios.put(
+      const { data } = Axios.put(
         `/api/v1/product/update-product/${id}`,
         productData
       );
@@ -91,7 +92,7 @@ const UpdateProduct = () => {
     try {
       let answer = window.prompt("Are You Sure want to delete this product ? ");
       if (!answer) return;
-      const { data } = await axios.delete(
+      const { data } = await Axios.delete(
         `/api/v1/product/delete-product/${id}`
       );
       toast.success("Product DEleted Succfully");
