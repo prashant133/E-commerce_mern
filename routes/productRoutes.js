@@ -6,7 +6,7 @@ const formidable = require('express-formidable')
 const router = express.Router()
 
 // routes
-// create product
+// create product\
 router.post('/create-product', requireSignIn, isAdmin, formidable(), createProductController)
 
 // get-product
