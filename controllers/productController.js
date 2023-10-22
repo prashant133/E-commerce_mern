@@ -182,5 +182,79 @@ const updateProductController = async(req, res)=> {
     }
 }
 
+// filters of product by price and category
+const productFilterController = async(req, res)=> {
+    try {
+        const {checked , radio} = req.body;
+        let args = {}
+        if(checked.length > 0) args.category = checked;
+        if(radio.length) args.price = { $gte : radio[0], $lte : radio[1]};
 
-module.exports = {createProductController,getProductController,getSingleProductController,productPhotoController,deleteProductController,updateProductController}
+        const products = await Product.find(args)
+        res.status(200).send({
+            success : true,
+            products
+        })
+        
+    } catch (error) {
+        console.log(error)
+        res.status(400).send({
+            success :false,
+            message : "Error while filtering products",
+            error
+
+        })
+    }
+
+}
+// product count controller
+const productCountController = async(req,res)=> {
+    try {
+        const total = await Product.find({}).estimatedDocumentCount()
+        res.status(200).send({
+            success : true,
+            total
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(400).send({
+            success : false,
+            error,
+            message : "Error in product count"
+        })
+    }
+}
+
+// product list based on page
+const productListController = async(req ,res)=> {
+    try {
+        const perPage = 2
+        const page =req.params.page ? req.params.page : 1
+        const products = await Product.find({}).select("-photo").skip((page-1)*perPage).limit(perPage).sort({createdAt : -1})
+
+        res.status(200).send({
+            success : true,
+            products,
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(400).send({
+            success :false,
+            message : "Something went wrong",
+            error
+        })
+    }
+}
+
+
+module.exports = {
+    createProductController,
+    getProductController,
+    getSingleProductController,
+    productPhotoController,
+    deleteProductController,
+    updateProductController,
+    productFilterController,
+    productCountController,
+    productListController
+}
