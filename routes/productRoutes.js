@@ -8,7 +8,8 @@ const {
     updateProductController, 
     productFilterController,
     productCountController, 
-    productListController
+    productListController,
+    searchProductController
     } = require('../controllers/productController')
 
     
@@ -44,5 +45,8 @@ router.get('/product-count',productCountController)
 
 // product per page
 router.get('/product-list/:page' ,productListController)
+
+// search
+router.get('/search/:keyword', searchProductController)
 
 module.exports = router
