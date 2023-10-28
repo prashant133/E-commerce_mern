@@ -9,7 +9,8 @@ const {
     productFilterController,
     productCountController, 
     productListController,
-    searchProductController
+    searchProductController,
+    relatedProductController
     } = require('../controllers/productController')
 
     
@@ -48,5 +49,8 @@ router.get('/product-list/:page' ,productListController)
 
 // search
 router.get('/search/:keyword', searchProductController)
+
+// similar product
+router.get('/related-product/:pid/:cid',relatedProductController)
 
 module.exports = router

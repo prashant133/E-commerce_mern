@@ -252,10 +252,10 @@ const searchProductController = async (req, res) => {
         const result = await Product.find({
             $or: [
                 { name: { $regex: keyword, $options: "i" } },
-                { description : {$regex : keyword , $options : "i"}},
+                { description: { $regex: keyword, $options: "i" } },
             ]
         })
-        .select("-photo")
+            .select("-photo")
         res.json(result)
     } catch (error) {
         console.log(error)
@@ -267,6 +267,33 @@ const searchProductController = async (req, res) => {
     }
 }
 
+// similar product
+const relatedProductController = async (req, res) => {
+    try {
+
+        const { cid, pid } = req.params
+
+        const products = await Product.find({
+            category: cid,
+            _id: {
+                // exclude 
+                $ne: pid
+            }
+        }).select("-photo").limit(3).populate("category")
+        res.status(200).send({
+            success : true,
+            products,
+        })
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+            success: false,
+            message: 'Error with api',
+            error
+        })
+    }
+}
 
 module.exports = {
     createProductController,
@@ -278,5 +305,6 @@ module.exports = {
     productFilterController,
     productCountController,
     productListController,
-    searchProductController
+    searchProductController,
+    relatedProductController
 }
