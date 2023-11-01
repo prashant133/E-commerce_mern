@@ -21,6 +21,7 @@
   "homepage": "https://github.com/prashant133/E-commerce_mern#readme",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "braintree": "^3.18.0",
     "concurrently": "^8.2.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",

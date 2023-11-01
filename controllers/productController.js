@@ -2,6 +2,18 @@ const { default: slugify } = require("slugify");
 const Product = require("../models/productModel");
 const fs = require('fs');
 const Category = require("../models/categoryModel");
+const braintree = require('braintree');
+const Order = require("../models/orderModel");
+const dotenv = require('dotenv').config()
+
+
+// payment gateway
+var gateway = new braintree.BraintreeGateway({
+    environment : braintree.Environment.Sandbox,
+    merchantId : process.env.BRAINTREE_MERCHANT_ID,
+    publicKey : process.env.BRAINTREE_PUBLIC_KEY,
+    privateKey : process.env.BRAINTREE_PRIVATE_KEY
+})
 
 const createProductController = async (req, res) => {
 
@@ -316,6 +328,63 @@ const productCategoryController = async(req ,res)=> {
       }
 }
 
+// payment gateway api
+// token controller 
+// this is the token to verifiy the account in paypal
+const braintreeTokenController = async(req ,res , next)=>{
+    try {
+        gateway.clientToken.generate({}, function(err , response){
+            if(err){
+                res.status(500).send(err)
+            }else{
+                res.send(response)
+            }
+        })
+
+        
+    } catch (error) {
+        console.log(error)
+        
+    }
+}
+
+// payment controller
+const braintreePaymentController = async(req ,res , next)=>{
+    try {
+        // nonce is from api braintree
+        const { nonce, cart } = req.body;
+        // price in the cart
+        let total = 0;
+        cart.map((i) => {
+          total += i.price;
+        });
+        let newTransaction = gateway.transaction.sale(
+          {
+            amount: total,
+            paymentMethodNonce: nonce,
+            options: {
+              submitForSettlement: true,
+            },
+          },
+          function (error, result) {
+            if (result) {
+              const order = new Order({
+                products: cart,
+                payment: result,
+                buyer: req.user._id,
+              }).save();
+              res.json({ ok: true });
+            } else {
+              res.status(500).send(error);
+            }
+          }
+        );
+      } catch (error) {
+        console.log(error);
+      }
+
+}
+
 
 module.exports = {
     createProductController,
@@ -329,5 +398,7 @@ module.exports = {
     productListController,
     searchProductController,
     relatedProductController,
-    productCategoryController
+    productCategoryController,
+    braintreeTokenController,
+    braintreePaymentController
 }
