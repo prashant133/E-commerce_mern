@@ -4,7 +4,8 @@ const {
     loginController,
     testController,
     forgotPasswordController,
-    updateProfileController } = require('../controllers/authController')
+    updateProfileController, 
+    getOrdersController} = require('../controllers/authController')
 const { isAdmin, requireSignIn } = require('../middleware/authMiddleware')
 
 // router-object
@@ -22,6 +23,9 @@ router.post("/forgot-password", forgotPasswordController)
 
 // update user
 router.put('/profile', requireSignIn, updateProfileController)
+
+//orders
+router.get("/orders", requireSignIn, getOrdersController);
 
 // protectd route auth for user
 router.get('/user-auth', requireSignIn, (req, res) => {
