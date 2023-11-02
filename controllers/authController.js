@@ -1,7 +1,8 @@
 const User = require('../models/userModel')
 const hashPassword = require('../helpers/authHelper')
 const JWT = require('jsonwebtoken');
-const Orders = require("../models/orderModel")
+const Orders = require("../models/orderModel");
+const Order = require('../models/orderModel');
 
 
 
@@ -229,4 +230,53 @@ const getOrdersController = async (req, res) => {
     }
 }
 
-module.exports = { registerController, loginController, testController, forgotPasswordController, updateProfileController,getOrdersController }
+const getOrdersAllController = async (req, res) => {
+    try {
+        const orders = await Orders
+          .find({})
+          .populate("products", "-photo")
+          .populate("buyer", "name")
+          .sort({ createdAt: "-1" });
+        res.json(orders);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({
+          success: false,
+          message: "Error WHile Geting Orders",
+          error,
+        });
+      }
+}
+
+// order status controller
+const orderStatusController = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const { status } = req.body;
+        const orders = await Orders.findByIdAndUpdate(
+          orderId,
+          { status },
+          { new: true }
+        );
+        res.json(orders);
+      } catch (error) {
+        console.log(error);
+        res.status(500).send({
+          success: false,
+          message: "Error While Updateing Order",
+          error,
+        });
+      }
+}
+
+
+module.exports = { 
+     registerController,
+     loginController, 
+     testController, 
+     forgotPasswordController, 
+     updateProfileController,
+     getOrdersController,
+     getOrdersAllController, 
+     orderStatusController
+    }
