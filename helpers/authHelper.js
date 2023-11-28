@@ -20,4 +20,13 @@ const comparePassword = async(password, hashedPassword)=>{
 }
 
 
-module.exports = {hashedPassword, comparePassword}
+const validatePassword = (password) => {
+  // Password should have at least one special character, one lowercase letter, one uppercase letter, and one numeric digit
+  const passwordRegex =
+    /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,12}$/;
+  return passwordRegex.test(password);
+};
+
+
+
+module.exports = { hashedPassword, comparePassword, validatePassword };

@@ -15,6 +15,17 @@ const registerController = async (req, res, next) => {
         if (!name || !email || !password || !phone || !address || !answer) {
             return res.send({ message: "Credintial Required" })
         }
+        if(password.length < 8 ){
+            return res.send({message : "password must be 8 character"})
+        }
+
+        if(password.length > 12){
+            return res.send({message : "password must not be more than 12 word"})
+        }
+
+       if(!hashPassword.validatePassword(password)){
+        return res.send({message : "Password must include special character, Uppercase, lowercase and a number"})
+       }
 
         // check the existing user
         const existingUser = await User.findOne({ email })

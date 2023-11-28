@@ -1,38 +1,45 @@
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
+const { validatePassword } = require('../helpers/authHelper');
 
-const userSchema = new mongoose.Schema({
-    name : {
-        type : String,
-        required : true,
-        trim : true 
-
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
     },
     email: {
-        type : String,
-        required : true,
-        unique : true
+      type: String,
+      required: true,
+      unique: true,
     },
-    password : {
-        type : String,
-        required : true,
+    password: {
+      type: String,
+      required: true,
+      validate : {
+        validator : validatePassword,
+        message : "Password must incldue special character"
+      }
     },
-    phone : {
-        type : String,
-        required : true
+    phone: {
+      type: String,
+      required: true,
     },
-    address :  {
-        type : String,
-        required : true,
+    address: {
+      type: String,
+      required: true,
     },
-    answer : {
-        type : String,
-        required : true,
+    answer: {
+      type: String,
+      required: true,
     },
-    role : {
-        type : Number,
-        default : 0
-    }
-},{timestamps : true })
+    role: {
+      type: Number,
+      default: 0,
+    },
+  },
+  { timestamps: true }
+);
 
 
 const User = mongoose.model("users", userSchema);
