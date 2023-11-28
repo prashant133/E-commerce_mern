@@ -71,65 +71,75 @@ const registerController = async (req, res, next) => {
 
 // LOGIN OF THE USER
 const loginController = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
 
-    try {
-        const { email, password } = req.body;
-
-        // validation
-        if (!email || !password) {
-            return res.send({
-                success: false,
-                message: "Invalid email or password"
-            })
-
-        }
-        // check user 
-        const user = await User.findOne({ email })
-        if (!user) {
-            return res.status(404).send({
-                success: false,
-                message: "Email not registered"
-            })
-        }
-        // compare the password with hashed password
-        const match = await hashPassword.comparePassword(password, user.password)
-        if (!match) {
-            return res.status(404).send({
-                success: false,
-                message: "Invalid Password"
-            })
-
-        }
-
-        // create a token if all set
-        const token = JWT.sign({ _id: user._id, }, process.env.JWT_SECRET, { expiresIn: '7d' });
-
-        return res.status(200).send({
-            success: true,
-            message: "login successfully",
-            user: {
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                address: user.address,
-                role: user.role,
-
-
-            },
-            token,
-        })
-
-
-    } catch (error) {
-        console.log(error)
-        return res.status(500).send({
-            success: false,
-            message: 'Error in Login',
-
-        })
+    // validation
+    if (!email || !password) {
+      return res.status(400).send({
+        success: false,
+        message: "Invalid email or password",
+      });
     }
 
-}
+    // check user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).send({
+        success: false,
+        message: "Email not registered",
+      });
+    }
+
+    // Check if the user is blocked
+    if (user.loginAttempts >= 3) {
+      return res.status(403).send({
+        success: false,
+        message: "User is blocked. Too many failed login attempts.",
+      });
+    }
+
+    // compare the password with hashed password
+    const match = await hashPassword.comparePassword(password, user.password);
+    if (!match) {
+      // Increment loginAttempts on failed login
+      await User.findByIdAndUpdate(user._id, { $inc: { loginAttempts: 1 } });
+
+      return res.status(401).send({
+        success: false,
+        message: "Invalid Password",
+      });
+    }
+
+    // Reset loginAttempts on successful login
+    await User.findByIdAndUpdate(user._id, { loginAttempts: 0 });
+
+    // create a token if all set
+    const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
+
+    return res.status(200).send({
+      success: true,
+      message: "Login successful",
+      user: {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        role: user.role,
+      },
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({
+      success: false,
+      message: "Error in Login",
+    });
+  }
+};
+
 
 // forgot password controller
 const forgotPasswordController = async (req, res, next) => {
