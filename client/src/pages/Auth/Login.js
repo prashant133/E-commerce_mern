@@ -58,7 +58,7 @@ const Login = () => {
       
       // check if the credentila is wrong
       if(error.response && error.response.status === 401){
-        toast.error("Invalid email or password");
+        toast.error("Invalid Credentials or Password Expire");
       }else if(error.response && error.response.status === 403){
        
         setIsBlocked(true);

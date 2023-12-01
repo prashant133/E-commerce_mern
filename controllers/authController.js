@@ -3,6 +3,7 @@ const hashPassword = require("../helpers/authHelper");
 const JWT = require("jsonwebtoken");
 const Orders = require("../models/orderModel");
 const Order = require("../models/orderModel");
+const { checkPasswordExpiration } = require("../services/passwordExpiration");
 
 // registration of the user
 const registerController = async (req, res, next) => {
@@ -108,6 +109,14 @@ const loginController = async (req, res, next) => {
       });
     }
 
+    // Check if the password has expired
+    if (checkPasswordExpiration(user.passwordLastModified)) {
+      return res.status(401).send({
+        success: false,
+        message: "Password has expired. Please reset your password.",
+      });
+    }
+
     // compare the password with hashed password
     const match = await hashPassword.comparePassword(password, user.password);
     if (!match) {
@@ -178,7 +187,7 @@ const forgotPasswordController = async (req, res, next) => {
       });
     }
     const hashed = await hashPassword.hashedPassword(newPassword);
-    await User.findByIdAndUpdate(user._id, { password: hashed });
+    await User.findByIdAndUpdate(user._id, { password: hashed , passwordLastModified : new Date() });
     res.status(200).send({
       success: true,
       message: "Password changed successfully",
