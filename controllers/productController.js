@@ -241,7 +241,7 @@ const productCountController = async (req, res) => {
 // product list based on page
 const productListController = async (req, res) => {
     try {
-        const perPage = 2
+        const perPage = 3
         const page = req.params.page ? req.params.page : 1
         const products = await Product.find({}).select("-photo").skip((page - 1) * perPage).limit(perPage).sort({ createdAt: -1 })
 

@@ -16,10 +16,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      validate : {
-        validator : validatePassword,
-        message : "Password must incldue special character"
-      }
+     
     },
     phone: {
       type: String,
@@ -41,8 +38,13 @@ const userSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    passwordLastModified  : {
+      type : Date,
+      default : Date.now
+    }
     
   },
+
   { timestamps: true }
 );
 
