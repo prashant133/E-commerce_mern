@@ -4,11 +4,13 @@ const JWT = require("jsonwebtoken");
 const Orders = require("../models/orderModel");
 const Order = require("../models/orderModel");
 const { checkPasswordExpiration } = require("../services/passwordExpiration");
+const { encryptData, decryptData } = require("../services/userEncryption");
 
 // registration of the user
 const registerController = async (req, res, next) => {
   try {
     const { name, email, password, phone, address, answer } = req.body;
+    const encryptionKey = process.env.ENCRYPTION_KEY;
 
     // validation
     if (!name || !email || !password || !phone || !address || !answer) {
@@ -38,11 +40,8 @@ const registerController = async (req, res, next) => {
       });
     }
 
-    console.log("here");
-
     // check the existing user
     const existingUser = await User.findOne({ email });
-    
 
     if (existingUser) {
       return res.send({
@@ -51,19 +50,25 @@ const registerController = async (req, res, next) => {
       });
     }
 
+    // Encrypt sensitive user details
+    const encryptedName = encryptData(name, encryptionKey);
+    const encryptedEmail = encryptData(email, encryptionKey);
+    const encryptedPhone= encryptData(phone, encryptionKey);
+    const encryptedAddress = encryptData(address, encryptionKey);
+    const encryptedAnswer = encryptData(answer, encryptionKey)
+
     const hashedPassword = await hashPassword.hashedPassword(password);
 
     // save
     const user = await new User({
-      name,
-      email,
-      phone,
-      address,
+      name: encryptedName,
+      email: encryptedEmail,
+      phone: encryptedPhone,
+      address: encryptedAddress,
       password: hashedPassword,
-      answer,
+      answer: encryptedAnswer,
     }).save();
 
-  
     return res.status(201).send({
       success: true,
       message: "User created successfully",
@@ -74,7 +79,7 @@ const registerController = async (req, res, next) => {
     return res.status(500).send({
       success: false,
       message: "Error in Registration",
-      error :  error.message
+      error: error.message,
     });
   }
 };
@@ -83,6 +88,8 @@ const registerController = async (req, res, next) => {
 const loginController = async (req, res, next) => {
   try {
     const { email, password } = req.body;
+
+    const decryptionKey = process.env.DECRYPTION_KEY;
 
     // validation
     if (!email || !password) {
@@ -93,13 +100,22 @@ const loginController = async (req, res, next) => {
     }
 
     // check user
-    const user = await User.findOne({ email });
+    // Encrypt the provided email for comparison
+    const encryptedLoginEmail = encryptData(email, decryptionKey);
+    const user = await User.findOne({ email: encryptedLoginEmail });
+    console.log(user);
     if (!user) {
       return res.status(404).send({
         success: false,
         message: "Email not registered",
       });
     }
+
+    // Decrypt sensitive user details
+    const decryptName = decryptData(user.name, decryptionKey);
+    const decryptEmail = decryptData(user.email, decryptionKey);
+    const decryptPhone = decryptData(user.phone, decryptionKey);
+    const decryptAddress = decryptData(user.address, decryptionKey);
 
     // Check if the user is blocked
     if (user.loginAttempts >= 3) {
@@ -141,10 +157,10 @@ const loginController = async (req, res, next) => {
       success: true,
       message: "Login successful",
       user: {
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        address: user.address,
+        name: decryptName,
+        email: decryptEmail,
+        phone: decryptPhone,
+        address: decryptAddress,
         role: user.role,
       },
       token,
@@ -187,7 +203,10 @@ const forgotPasswordController = async (req, res, next) => {
       });
     }
     const hashed = await hashPassword.hashedPassword(newPassword);
-    await User.findByIdAndUpdate(user._id, { password: hashed , passwordLastModified : new Date() });
+    await User.findByIdAndUpdate(user._id, {
+      password: hashed,
+      passwordLastModified: new Date(),
+    });
     res.status(200).send({
       success: true,
       message: "Password changed successfully",
