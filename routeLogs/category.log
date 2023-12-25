@@ -1,0 +1,11 @@
+GET /api/v1/category/get-category 200 337.904 ms - 242
+GET /api/v1/category/get-category 304 305.870 ms - -
+GET /api/v1/category/get-category 304 293.210 ms - -
+GET /api/v1/category/get-category 304 277.008 ms - -
+GET /api/v1/category/get-category 304 369.174 ms - -
+GET /api/v1/category/get-category 304 299.175 ms - -
+GET /api/v1/category/get-category 304 365.884 ms - -
+GET /api/v1/category/get-category 304 323.918 ms - -
+GET /api/v1/category/get-category 304 359.379 ms - -
+GET /api/v1/category/get-category 304 366.060 ms - -
+GET /api/v1/category/get-category 304 383.847 ms - -
